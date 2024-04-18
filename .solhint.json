@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "solhint:recommended"
+  ],
+  "rules": {
+    "avoid-throw": "off",
+    "avoid-suicide": "error",
+    "avoid-sha3": "warn",
+    "no-global-import": "off",
+    "var-name-mixedcase": "warn",
+    "func-visibility": "off",
+    "no-unused-vars": "off",
+    "reason-string": "off",
+    "gas-custom-errors": "off"
+  }
+}

@@ -2,7 +2,7 @@ const { network } = require("hardhat");
 const {
   developmentChains,
   VERIFICATION_BLOCK_CONFIRMATIONS,
-} = require("../helper-hardhat-config");
+} = require("../hardhat.config");
 const { verify } = require("../utils/verify");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
@@ -35,4 +35,11 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   log("----------------------------------------------------");
 };
 
-module.exports.tags = ["all", "nftmarketplace"];
+// main()
+//   .then(() => process.exit(0))
+//   .catch((error) => {
+//     console.error(error);
+//     process.exit(1);
+//   });
+
+module.exports.tags = ["all", "marketplace", "main"];

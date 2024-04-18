@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -41,12 +41,12 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 price
     );
 
-    mapping(address => mapping(uint256 => Listing)) private s_listings;
-    mapping(address => uint256) private s_proceeds;
+    mapping(address => mapping(uint256 => Listing)) private listings;
+    mapping(address => uint256) private proceeds;
     mapping(address => bool) public allowedNFTs;
 
     modifier notListed(address nftAddress, uint256 tokenId) {
-        Listing memory listing = s_listings[nftAddress][tokenId];
+        Listing memory listing = listings[nftAddress][tokenId];
         if (listing.price > 0) {
             revert AlreadyListed(nftAddress, tokenId);
         }
@@ -54,7 +54,7 @@ contract NftMarketplace is ReentrancyGuard {
     }
 
     modifier isListed(address nftAddress, uint256 tokenId) {
-        Listing memory listing = s_listings[nftAddress][tokenId];
+        Listing memory listing = listings[nftAddress][tokenId];
         if (listing.price <= 0) {
             revert NotListed(nftAddress, tokenId);
         }
@@ -95,8 +95,9 @@ contract NftMarketplace is ReentrancyGuard {
         _;
     }
 
+    // Only nfts from volaverse smart contract will be traded in the marketplace
     constructor(address[] memory _allowedNFTAddresses) {
-        for (uint i = 0; i < _allowedNFTAddresses.length; i++) {
+        for (uint256 i = 0; i < _allowedNFTAddresses.length; i++) {
             allowedNFTs[_allowedNFTAddresses[i]] = true;
         }
     }
@@ -128,7 +129,7 @@ contract NftMarketplace is ReentrancyGuard {
         if (nft.getApproved(tokenId) != address(this)) {
             revert NotApprovedForMarketplace();
         }
-        s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
+        listings[nftAddress][tokenId] = Listing(price, msg.sender);
         emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
 
@@ -145,7 +146,7 @@ contract NftMarketplace is ReentrancyGuard {
         isOwner(nftAddress, tokenId, msg.sender)
         isListed(nftAddress, tokenId)
     {
-        delete (s_listings[nftAddress][tokenId]);
+        delete (listings[nftAddress][tokenId]);
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
     }
 
@@ -164,12 +165,12 @@ contract NftMarketplace is ReentrancyGuard {
         isNotOwner(nftAddress, tokenId, msg.sender)
         nonReentrant
     {
-        Listing memory listedItem = s_listings[nftAddress][tokenId];
+        Listing memory listedItem = listings[nftAddress][tokenId];
         if (msg.value < listedItem.price) {
             revert PriceNotMet(nftAddress, tokenId, listedItem.price);
         }
-        s_proceeds[listedItem.seller] += msg.value;
-        delete (s_listings[nftAddress][tokenId]);
+        proceeds[listedItem.seller] += msg.value;
+        delete (listings[nftAddress][tokenId]);
         IERC721(nftAddress).safeTransferFrom(
             listedItem.seller,
             msg.sender,
@@ -198,7 +199,7 @@ contract NftMarketplace is ReentrancyGuard {
         if (newPrice <= 0) {
             revert PriceMustBeAboveZero();
         }
-        s_listings[nftAddress][tokenId].price = newPrice;
+        listings[nftAddress][tokenId].price = newPrice;
         emit ItemListed(msg.sender, nftAddress, tokenId, newPrice);
     }
 
@@ -206,12 +207,14 @@ contract NftMarketplace is ReentrancyGuard {
      * @notice Method for withdrawing proceeds from sales
      */
     function withdrawProceeds() external {
-        uint256 proceeds = s_proceeds[msg.sender];
-        if (proceeds <= 0) {
+        uint256 proceedsWithdraw = proceeds[msg.sender];
+        if (proceedsWithdraw <= 0) {
             revert NoProceeds();
         }
-        s_proceeds[msg.sender] = 0;
-        (bool success, ) = payable(msg.sender).call{value: proceeds}("");
+        proceeds[msg.sender] = 0;
+        (bool success, ) = payable(msg.sender).call{value: proceedsWithdraw}(
+            ""
+        );
         require(success, "Transfer failed");
     }
 
@@ -224,11 +227,11 @@ contract NftMarketplace is ReentrancyGuard {
         address nftAddress,
         uint256 tokenId
     ) external view returns (Listing memory) {
-        return s_listings[nftAddress][tokenId];
+        return listings[nftAddress][tokenId];
     }
 
     // returns proccesinds of a particular seller
     function getProceeds(address seller) external view returns (uint256) {
-        return s_proceeds[seller];
+        return proceeds[seller];
     }
 }

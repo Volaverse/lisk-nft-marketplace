@@ -10,7 +10,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   log("----------------------------------------------------");
   const arguments = [];
-  const basicNft = await deploy("LandNft", {
+  const collectibleNft = await deploy("CollectibleNft", {
     from: deployer,
     args: arguments,
     log: true,
@@ -23,15 +23,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     process.env.ETHERSCAN_API_KEY
   ) {
     log("Verifying...");
-    await verify(basicNft.address, arguments);
+    await verify(collectibleNft.address, arguments);
   }
 };
 
 // main()
 //   .then(() => process.exit(0))
 //   .catch((error) => {
-//     console.error(error)
-//     process.exit(1)
-//   })
+//     console.error(error);
+//     process.exit(1);
+//   });
 
-module.exports.tags = ["all", "landNft", "main"];
+module.exports.tags = ["all", "collectibleNft", "main"];

@@ -10,7 +10,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   log("----------------------------------------------------");
   const arguments = [];
-  const basicNft = await deploy("LandNft", {
+  const basicNft = await deploy("WearableNft", {
     from: deployer,
     args: arguments,
     log: true,
@@ -30,8 +30,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 // main()
 //   .then(() => process.exit(0))
 //   .catch((error) => {
-//     console.error(error)
-//     process.exit(1)
-//   })
-
-module.exports.tags = ["all", "landNft", "main"];
+//     console.error(error);
+//     process.exit(1);
+//   });
+module.exports.tags = ["all", "WearableNft", "main"];
