@@ -33,4 +33,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 //     console.error(error);
 //     process.exit(1);
 //   });
-module.exports.tags = ["all", "WearableNft", "main"];
+module.exports.tags = ["all", "wearableNft", "main"];
