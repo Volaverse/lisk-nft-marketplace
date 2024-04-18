@@ -9,7 +9,7 @@ Volaverse is an education-focused metaverse powered by the Lisk blockchain. It p
 To use this backend, you will need to install the following dependencies:
 
 - Nvm
-- Node.js v20.3.0(Please note that blockchain might not run on the other versions of Node.js)
+- Node.js v20.3.1(Please note that project might not run on the other versions of Node.js)
 
 ### Installation
 
@@ -60,11 +60,7 @@ For example, to deploy the `CollectibleNft` contract to the mainnet network, you
 
 ```bash
 npx hardhat deploy --network lisk-sepolia --tags collectibleNft 
-
 ```
-npm run solhint
-```
-
 
 ## Smart Contacts
 
