@@ -9,7 +9,7 @@ Volaverse is an education-focused metaverse powered by the Lisk blockchain. It p
 To use this backend, you will need to install the following dependencies:
 
 - Nvm
-- Node.js v20.3.0(Please note that blockchain might not run on the other versions of Node.js)
+- Node.js v20.3.1(Please note that project might not run on the other versions of Node.js)
 
 ### Installation
 
@@ -22,11 +22,14 @@ To use this backend, you will need to install the following dependencies:
    ```sh
     npm install
 
-### Start a local node
+### Environment Variables
+
+The project uses environment variables for configuration. To set up your environment, create a `.env` file in the root directory of the project and populate it with your values. You can use the provided `.env.sample` file as a template:
 
 ```
-npx hardhat node
+cp .env.sample .env
 ```
+
 
 ### Run Tests
 
@@ -34,16 +37,35 @@ npx hardhat node
 npx hardhat test
 ```
 
+
+
+### Start a local node
+
+```
+npx hardhat node
+```
+
+
 ### Linting 
 
 ```
 npm run solhint
 ```
 
+### Deploying with Hardhat
+
+To deploy your smart contracts using Hardhat, you can use the `npx hardhat deploy` command followed by the `--network` flag to specify the network you want to deploy to. Additionally, you can use the `--tags` flag to deploy specific contracts tagged in your deployment scripts.
+
+For example, to deploy the `CollectibleNft` contract to the mainnet network, you would run:
+
+```bash
+npx hardhat deploy --network lisk-sepolia --tags collectibleNft 
+```
+
 ## Smart Contacts
 
 ### Marketplace Smart Contract
-The Marketplace.sol file contains the marketplace smart contract, which includes functions for buying and listing NFTs.
+The Marketplace.sol file contains the marketplace smart contract, which includes functions for buying and listing NFTs. Additionally, the constructor of the Marketplace contract accepts an array of allowed NFT contract addresses as input. This ensures that only NFTs from these specified contracts can be traded on the marketplace.
 
 ### Land Nft Smart Contract
 The Land.sol file contains the Land nft smart contract, which includes minting of  NFTs by the owner of the contract.
