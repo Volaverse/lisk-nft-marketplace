@@ -99,6 +99,7 @@ require("dotenv").config();
           ).revertedWithCustomError(nftMarketplace, "PriceMustBeAboveZero");
         });
       });
+
       describe("cancelListing", function () {
         it("reverts if there is no listing", async function () {
           const error = `NotListed("${basicNft.target}", ${TOKEN_ID})`;
@@ -127,6 +128,7 @@ require("dotenv").config();
           assert(listing.price.toString() == "0");
         });
       });
+
       describe("buyItem", function () {
         let buyPrice = ethers.parseEther("0.2");
 
@@ -166,6 +168,7 @@ require("dotenv").config();
           assert.equal(deployerProceeds.toString(), buyPrice.toString());
         });
       });
+
       describe("updateListing", function () {
         it("must be owner and listed", async function () {
           await expect(
