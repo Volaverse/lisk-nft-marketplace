@@ -56,7 +56,6 @@ require("dotenv").config();
           await landNft.batchMint(ipfsArr);
           const tokenURI1 = await landNft.tokenURI(1);
           const tokenURI2 = await landNft.tokenURI(2);
-          console.log("tokenUri", tokenURI1);
           const tokenCounter = await landNft.returnTokkenCounter();
 
           assert.equal(tokenCounter.toString(), "3");

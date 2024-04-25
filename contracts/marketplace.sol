@@ -16,9 +16,11 @@ error PriceMustBeAboveZero();
 error NFTAddressNotPermitted(address nftAddress);
 
 contract NftMarketplace is ReentrancyGuard {
-    struct Listing {
+    struct NftList {
+        uint256 tokenId;
+        address nftAddress;
         uint256 price;
-        address seller;
+        address owner;
     }
 
     event ItemListed(
@@ -41,12 +43,15 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 price
     );
 
-    mapping(address => mapping(uint256 => Listing)) private listings;
     mapping(address => uint256) private proceeds;
     mapping(address => bool) public allowedNFTs;
+    mapping(address => mapping(uint256 => NftList)) public nftsListMap;
+    mapping(address => mapping(uint256 => uint256)) private listingIndex;
+    NftList[] public nftlLists;
+    address[] public allowedNFTAddresses;
 
     modifier notListed(address nftAddress, uint256 tokenId) {
-        Listing memory listing = listings[nftAddress][tokenId];
+        NftList memory listing = nftsListMap[nftAddress][tokenId];
         if (listing.price > 0) {
             revert AlreadyListed(nftAddress, tokenId);
         }
@@ -54,7 +59,7 @@ contract NftMarketplace is ReentrancyGuard {
     }
 
     modifier isListed(address nftAddress, uint256 tokenId) {
-        Listing memory listing = listings[nftAddress][tokenId];
+        NftList memory listing = nftsListMap[nftAddress][tokenId];
         if (listing.price <= 0) {
             revert NotListed(nftAddress, tokenId);
         }
@@ -99,6 +104,7 @@ contract NftMarketplace is ReentrancyGuard {
     constructor(address[] memory _allowedNFTAddresses) {
         for (uint256 i = 0; i < _allowedNFTAddresses.length; i++) {
             allowedNFTs[_allowedNFTAddresses[i]] = true;
+            allowedNFTAddresses.push(_allowedNFTAddresses[i]);
         }
     }
 
@@ -129,7 +135,18 @@ contract NftMarketplace is ReentrancyGuard {
         if (nft.getApproved(tokenId) != address(this)) {
             revert NotApprovedForMarketplace();
         }
-        listings[nftAddress][tokenId] = Listing(price, msg.sender);
+
+        NftList memory newListing = NftList(
+            tokenId,
+            nftAddress,
+            price,
+            msg.sender
+        );
+        nftsListMap[nftAddress][tokenId] = newListing;
+        nftlLists.push(newListing);
+        // Store the index of the new listing
+        listingIndex[nftAddress][tokenId] = nftlLists.length - 1;
+
         emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
 
@@ -146,7 +163,21 @@ contract NftMarketplace is ReentrancyGuard {
         isOwner(nftAddress, tokenId, msg.sender)
         isListed(nftAddress, tokenId)
     {
-        delete (listings[nftAddress][tokenId]);
+        uint256 index = listingIndex[nftAddress][tokenId];
+        require(index < nftlLists.length, "Index out of bounds");
+
+        // Move the last element to the deleted spot to maintain array integrity
+        if (index != nftlLists.length - 1) {
+            NftList memory lastListing = nftlLists[nftlLists.length - 1];
+            nftlLists[index] = lastListing;
+            listingIndex[lastListing.nftAddress][lastListing.tokenId] = index;
+        }
+
+        // Remove the last element
+        nftlLists.pop();
+        delete nftsListMap[nftAddress][tokenId];
+        delete listingIndex[nftAddress][tokenId];
+
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
     }
 
@@ -165,14 +196,27 @@ contract NftMarketplace is ReentrancyGuard {
         isNotOwner(nftAddress, tokenId, msg.sender)
         nonReentrant
     {
-        Listing memory listedItem = listings[nftAddress][tokenId];
+        NftList memory listedItem = nftsListMap[nftAddress][tokenId];
         if (msg.value < listedItem.price) {
             revert PriceNotMet(nftAddress, tokenId, listedItem.price);
         }
-        proceeds[listedItem.seller] += msg.value;
-        delete (listings[nftAddress][tokenId]);
+        proceeds[listedItem.owner] += msg.value;
+        uint256 index = listingIndex[nftAddress][tokenId];
+        require(index < nftlLists.length, "Index out of bounds");
+
+        // Move the last element to the deleted spot to maintain array integrity
+        if (index != nftlLists.length - 1) {
+            NftList memory lastListing = nftlLists[nftlLists.length - 1];
+            nftlLists[index] = lastListing;
+            listingIndex[lastListing.nftAddress][lastListing.tokenId] = index;
+        }
+
+        // Remove the last element
+        nftlLists.pop();
+        delete nftsListMap[nftAddress][tokenId];
+        delete listingIndex[nftAddress][tokenId];
         IERC721(nftAddress).safeTransferFrom(
-            listedItem.seller,
+            listedItem.owner,
             msg.sender,
             tokenId
         );
@@ -195,11 +239,11 @@ contract NftMarketplace is ReentrancyGuard {
         nonReentrant
         isOwner(nftAddress, tokenId, msg.sender)
     {
-        //We should check the value of `newPrice` and revert if it's below zero (like we also check in `listItem()`)
+
         if (newPrice <= 0) {
             revert PriceMustBeAboveZero();
         }
-        listings[nftAddress][tokenId].price = newPrice;
+        nftsListMap[nftAddress][tokenId].price = newPrice;
         emit ItemListed(msg.sender, nftAddress, tokenId, newPrice);
     }
 
@@ -226,12 +270,17 @@ contract NftMarketplace is ReentrancyGuard {
     function getListing(
         address nftAddress,
         uint256 tokenId
-    ) external view returns (Listing memory) {
-        return listings[nftAddress][tokenId];
+    ) external view returns (NftList memory) {
+        return nftsListMap[nftAddress][tokenId];
     }
 
     // returns proccesinds of a particular seller
     function getProceeds(address seller) external view returns (uint256) {
         return proceeds[seller];
+    }
+
+    // returns all the listed nfts in the marketplace
+    function getAllListings() external view returns (NftList[] memory) {
+        return nftlLists;
     }
 }

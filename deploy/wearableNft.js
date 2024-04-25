@@ -6,11 +6,11 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  console.log("deploying basic nft");
+  console.log("deploying wearable nft");
 
   log("----------------------------------------------------");
   const arguments = [];
-  const basicNft = await deploy("WearableNft", {
+  const WearableNft = await deploy("WearableNft", {
     from: deployer,
     args: arguments,
     log: true,
@@ -18,19 +18,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 
   // Verify the deployment
-  if (
-    !developmentChains.includes(network.name) &&
-    process.env.ETHERSCAN_API_KEY
-  ) {
+  if (!developmentChains.includes(network.name)) {
     log("Verifying...");
-    await verify(basicNft.address, arguments);
+    await verify(WearableNft.address, arguments);
   }
 };
 
-// main()
-//   .then(() => process.exit(0))
-//   .catch((error) => {
-//     console.error(error);
-//     process.exit(1);
-//   });
 module.exports.tags = ["all", "WearableNft", "main"];

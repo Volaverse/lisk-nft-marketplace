@@ -6,9 +6,7 @@ require("@nomicfoundation/hardhat-verify");
 require("hardhat-deploy");
 require("dotenv").config();
 
-
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
-
 
 module.exports = {
   defaultNetwork: "hardhat",
@@ -52,11 +50,18 @@ module.exports = {
       default: 1,
     },
   },
-  developmentChains :["hardhat", "localhost"],
+  developmentChains: ["hardhat", "localhost"],
   solidity: {
     compilers: [
       {
         version: "0.8.24",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          },
+          viaIR: true
+        }
       },
     ],
   },

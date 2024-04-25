@@ -25,21 +25,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 
   // Verify the deployment
-  if (
-    !developmentChains.includes(network.name) &&
-    process.env.ETHERSCAN_API_KEY
-  ) {
+  if (!developmentChains.includes(network.name)) {
     log("Verifying...");
     await verify(nftMarketplace.address, arguments);
   }
   log("----------------------------------------------------");
 };
 
-// main()
-//   .then(() => process.exit(0))
-//   .catch((error) => {
-//     console.error(error);
-//     process.exit(1);
-//   });
+
 
 module.exports.tags = ["all", "marketplace", "main"];
