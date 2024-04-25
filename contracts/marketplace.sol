@@ -108,15 +108,15 @@ contract NftMarketplace is ReentrancyGuard {
         }
     }
 
-    /////////////////////
-    // Main Functions //
-    /////////////////////
+
+    // Main Functions 
+
     /*
-     * @notice Method for listing NFT
-     * @param nftAddress Address of NFT contract
-     * @param tokenId Token ID of NFT
-     * @param price sale price for each item
-     */
+      @notice Method for listing NFT
+      @param nftAddress Address of NFT contract
+      @param tokenId Token ID of NFT
+      @param price sale price for each item
+    */
 
     function listItem(
         address nftAddress,
@@ -151,10 +151,10 @@ contract NftMarketplace is ReentrancyGuard {
     }
 
     /*
-     * @notice Method for cancelling listing
-     * @param nftAddress Address of NFT contract
-     * @param tokenId Token ID of NFT
-     */
+      @notice Method for cancelling listing
+      @param nftAddress Address of NFT contract
+      @param tokenId Token ID of NFT
+    */
     function cancelListing(
         address nftAddress,
         uint256 tokenId
@@ -182,10 +182,10 @@ contract NftMarketplace is ReentrancyGuard {
     }
 
     /*
-     * @notice Method for buying listing
-     * @param nftAddress Address of NFT contract
-     * @param tokenId Token ID of NFT
-     */
+      @notice Method for buying listing
+      @param nftAddress Address of NFT contract
+      @param tokenId Token ID of NFT
+    */
     function buyItem(
         address nftAddress,
         uint256 tokenId
@@ -224,11 +224,11 @@ contract NftMarketplace is ReentrancyGuard {
     }
 
     /*
-     * @notice Method for updating listing
-     * @param nftAddress Address of NFT contract
-     * @param tokenId Token ID of NFT
-     * @param newPrice Price in Wei of the item
-     */
+      @notice Method for updating listing
+      @param nftAddress Address of NFT contract
+      @param tokenId Token ID of NFT
+      @param newPrice Price in Wei of the item
+    */
     function updateListing(
         address nftAddress,
         uint256 tokenId,
@@ -248,8 +248,8 @@ contract NftMarketplace is ReentrancyGuard {
     }
 
     /*
-     * @notice Method for withdrawing proceeds from sales
-     */
+      @notice Method for withdrawing proceeds from sales
+    */
     function withdrawProceeds() external {
         uint256 proceedsWithdraw = proceeds[msg.sender];
         if (proceedsWithdraw <= 0) {
@@ -262,9 +262,9 @@ contract NftMarketplace is ReentrancyGuard {
         require(success, "Transfer failed");
     }
 
-    /////////////////////
-    // Getter Functions //
-    ////////////////////
+
+    // Getter Functions 
+
 
     // returns listing of a particular nft
     function getListing(
