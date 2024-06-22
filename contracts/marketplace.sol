@@ -30,6 +30,13 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 price
     );
 
+    event ItemUpdateed(
+        address indexed seller,
+        address indexed nftAddress,
+        uint256 indexed tokenId,
+        uint256 price
+    );
+
     event ItemCanceled(
         address indexed seller,
         address indexed nftAddress,
@@ -244,7 +251,10 @@ contract NftMarketplace is ReentrancyGuard {
             revert PriceMustBeAboveZero();
         }
         nftsListMap[nftAddress][tokenId].price = newPrice;
-        emit ItemListed(msg.sender, nftAddress, tokenId, newPrice);
+        uint256 index = listingIndex[nftAddress][tokenId];
+        require(index < nftlLists.length, "Index out of bounds");
+        nftlLists[index].price = newPrice;
+        emit ItemUpdateed(msg.sender, nftAddress, tokenId, newPrice);
     }
 
     /*
