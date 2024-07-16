@@ -1,4 +1,4 @@
-const { network } = require("hardhat");
+const { network, ethers } = require("hardhat");
 const {
   developmentChains,
   VERIFICATION_BLOCK_CONFIRMATIONS,
@@ -13,7 +13,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     : VERIFICATION_BLOCK_CONFIRMATIONS;
 
   log("----------------------------------------------------");
-
+  const maxPriorityFeePerGas = ethers.parseUnits("0", "gwei");
   const argumentsArr = process.env.NFT_ALLOWED_ADDRESS.split(",");
   console.log("arg array ", argumentsArr);
   const arguments = [argumentsArr];
@@ -22,6 +22,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     args: arguments,
     log: true,
     waitConfirmations: waitBlockConfirmations,
+    maxPriorityFeePerGas: maxPriorityFeePerGas,
   });
 
   // Verify the deployment
@@ -31,12 +32,5 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   }
   log("----------------------------------------------------");
 };
-
-// main()
-//   .then(() => process.exit(0))
-//   .catch((error) => {
-//     console.error(error);
-//     process.exit(1);
-//   });
 
 module.exports.tags = ["all", "marketplace", "main"];

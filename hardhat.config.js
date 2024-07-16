@@ -24,11 +24,18 @@ module.exports = {
       gasPrice: 1000000000,
       chainId: 4202,
     },
+    lisk: {
+      url: "https://rpc.api.lisk.com",
+      accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+      gasPrice: 1000000000,
+      chainId: 1135,
+    },
   },
   etherscan: {
     // npx hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
     apiKey: {
       "lisk-sepolia": "123",
+      lisk: "123",
     },
     customChains: [
       {
@@ -37,6 +44,14 @@ module.exports = {
         urls: {
           apiURL: "https://sepolia-blockscout.lisk.com/api",
           browserURL: "https://sepolia-blockscout.lisk.com",
+        },
+      },
+      {
+        network: "lisk",
+        chainId: 1135,
+        urls: {
+          apiURL: "https://blockscout.lisk.com/api",
+          browserURL: "https://blockscout.lisk.com",
         },
       },
     ],
@@ -58,10 +73,10 @@ module.exports = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200
+            runs: 200,
           },
-          viaIR: true
-        }
+          viaIR: true,
+        },
       },
     ],
   },

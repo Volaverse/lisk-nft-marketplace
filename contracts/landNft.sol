@@ -19,9 +19,9 @@ contract LandNft is ERC721URIStorage, Ownable {
     }
 
     function mintNft(string memory tokenURI) public onlyOwner {
+        tokkenCounter = tokkenCounter + 1;
         _safeMint(msg.sender, tokkenCounter);
         _setTokenURI(tokkenCounter, tokenURI);
-        tokkenCounter = tokkenCounter + 1;
     }
 
     function batchMint(string[] memory tokenURIs) public onlyOwner {
@@ -31,9 +31,10 @@ contract LandNft is ERC721URIStorage, Ownable {
         }
 
         for (uint256 i = 0; i < tokenURIs.length; i++) {
+            tokkenCounter = tokkenCounter + 1;
             _safeMint(msg.sender, tokkenCounter);
             _setTokenURI(tokkenCounter, tokenURIs[i]);
-            tokkenCounter = tokkenCounter + 1;
+            
         }
     }
 }

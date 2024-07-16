@@ -29,8 +29,7 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 indexed tokenId,
         uint256 price
     );
-
-    event ItemUpdateed(
+    event ItemUpdated(
         address indexed seller,
         address indexed nftAddress,
         uint256 indexed tokenId,
@@ -115,8 +114,7 @@ contract NftMarketplace is ReentrancyGuard {
         }
     }
 
-
-    // Main Functions 
+    // Main Functions
 
     /*
       @notice Method for listing NFT
@@ -246,7 +244,6 @@ contract NftMarketplace is ReentrancyGuard {
         nonReentrant
         isOwner(nftAddress, tokenId, msg.sender)
     {
-
         if (newPrice <= 0) {
             revert PriceMustBeAboveZero();
         }
@@ -254,7 +251,7 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 index = listingIndex[nftAddress][tokenId];
         require(index < nftlLists.length, "Index out of bounds");
         nftlLists[index].price = newPrice;
-        emit ItemUpdateed(msg.sender, nftAddress, tokenId, newPrice);
+        emit ItemUpdated(msg.sender, nftAddress, tokenId, newPrice);
     }
 
     /*
@@ -272,9 +269,7 @@ contract NftMarketplace is ReentrancyGuard {
         require(success, "Transfer failed");
     }
 
-
-    // Getter Functions 
-
+    // Getter Functions
 
     // returns listing of a particular nft
     function getListing(

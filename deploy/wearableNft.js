@@ -10,11 +10,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   log("----------------------------------------------------");
   const arguments = [];
+  const maxPriorityFeePerGas = ethers.parseUnits("0", "gwei");
   const WearableNft = await deploy("WearableNft", {
     from: deployer,
     args: arguments,
     log: true,
     waitConfirmations: network.config.blockConfirmations || 1,
+    maxPriorityFeePerGas: maxPriorityFeePerGas,
   });
 
   // Verify the deployment
@@ -24,10 +26,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   }
 };
 
-// main()
-//   .then(() => process.exit(0))
-//   .catch((error) => {
-//     console.error(error);
-//     process.exit(1);
-//   });
 module.exports.tags = ["all", "WearableNft", "main"];
